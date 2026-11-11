@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashish & Sushmita — Wedding Invitation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cinzel Decorative, Cormorant Garamond, Great Vibes, Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maroon': {
+                            800: '#58111A',
+                            900: '#3D0C12',
+                            950: '#260509'
+                        },
+                        'gold': {
+                            200: '#FEF3C7',
+                            300: '#FDE68A',
+                            400: '#F6D365',
+                            500: '#D4AF37',
+                            600: '#B8860B',
+                            700: '#926F12'
+                        },
+                        'royal-cream': '#FBF8F3',
+                    },
+                    fontFamily: {
+                        'cinzel': ['"Cinzel Decorative"', 'serif'],
+                        'serif': ['"Cormorant Garamond"', 'serif'],
+                        'script': ['"Great Vibes"', 'cursive'],
+                        'sans': ['"Montserrat"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Gentle glowing and floating animations */
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.95; }
+            50% { transform: scale(1.025); opacity: 1; }
+        }
+        .animate-pulse-slow {
+            animation: gentle-pulse 4s ease-in-out infinite;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #260509;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+
+        /* Canvas for floating petals */
+        #petal-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .gold-border-gradient {
+            border-image: linear-gradient(to bottom right, #D4AF37, #F6D365, #B8860B) 1;
+        }
+
+        .gold-shadow {
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-royal-cream text-stone-800 font-sans antialiased selection:bg-gold-500 selection:text-maroon-950 overflow-x-hidden">
+
+    <!-- FLOATING SHEHNAI / RAGA AUDIO TOGGLE -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="music-toggle-btn" class="bg-maroon-900 border-2 border-gold-400 text-gold-300 p-3.5 sm:px-5 sm:py-3 rounded-full shadow-2xl flex items-center justify-center gap-3 hover:bg-maroon-800 transition-all transform hover:scale-105 active:scale-95 group focus:outline-none">
+            <i id="music-icon" class="fas fa-music text-base sm:text-lg group-hover:rotate-12 transition"></i>
+            <span id="music-text" class="text-xs font-semibold tracking-wider uppercase hidden sm:inline">Play Shehnai</span>
+        </button>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast-box" class="fixed top-6 right-6 z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-maroon-900 border border-gold-400 text-gold-300 px-6 py-4 rounded-2xl shadow-2xl max-w-sm flex items-center gap-3">
+        <i class="fas fa-check-circle text-xl text-gold-400"></i>
+        <div id="toast-message" class="text-xs sm:text-sm font-medium">Notification message</div>
+    </div>
+
+    <!-- AUSPICIOUS TOP BANNER -->
+    <header class="bg-maroon-950 text-gold-400 text-center py-2.5 px-4 text-xs tracking-widest uppercase border-b border-gold-500/30 flex justify-between items-center max-w-7xl mx-auto">
+        <span class="font-cinzel text-xs hidden md:inline">॥ श्री गणेशाय नमः ॥</span>
+        <span class="mx-auto text-[11px] sm:text-xs tracking-widest">Shree Ganeshay Namah • Om Namah Shivay</span>
+        <span class="font-cinzel text-xs hidden md:inline">॥ ॐ नमः शिवाय ॥</span>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen bg-gradient-to-b from-maroon-950 via-maroon-900 to-maroon-950 text-white flex flex-col justify-center items-center px-4 py-16 text-center overflow-hidden">
+        <!-- Floating Rose Petals & Golden Glitters Canvas -->
+        <canvas id="petal-canvas"></canvas>
+
+        <!-- Decorative Indian Royal Border -->
+        <div class="absolute inset-4 sm:inset-8 border border-gold-500/30 rounded-3xl pointer-events-none"></div>
+        <div class="absolute inset-6 sm:inset-11 border border-gold-500/15 rounded-2xl pointer-events-none"></div>
+
+        <!-- Auspicious Kalash / Ganesh Icon -->
+        <div class="z-20 mb-4 animate-pulse-slow">
+            <svg class="w-16 h-16 sm:w-20 sm:h-20 mx-auto fill-gold-400 filter drop-shadow-[0_2px_12px_rgba(212,175,55,0.45)]" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+            <p class="font-cinzel text-gold-400 tracking-widest text-xs sm:text-sm mt-1">॥ शुभ विवाह ॥</p>
+        </div>
+
+        <!-- Invitation Headline -->
+        <div class="z-20 max-w-3xl">
+            <p class="font-sans text-xs sm:text-sm uppercase tracking-[0.35em] text-gold-300 font-light mb-3">
+                Together with their families
+            </p>
+            <h1 class="font-cinzel text-4xl sm:text-6xl md:text-7xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-gold-600 mb-2 drop-shadow-lg">
+                ASHISH
+            </h1>
+            <p class="font-script text-3xl sm:text-5xl text-gold-300 my-1">&</p>
+            <h1 class="font-cinzel text-4xl sm:text-6xl md:text-7xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-gold-600 mb-6 drop-shadow-lg">
+                SUSHMITA
+            </h1>
+            
+            <p class="font-serif italic text-lg sm:text-2xl text-stone-200 max-w-xl mx-auto leading-relaxed">
+                Invite you to celebrate their wedding celebrations and shower your blessings on their new beginning.
+            </p>
+        </div>
+
+        <!-- Wedding Date & Venue Tag -->
+        <div class="z-20 mt-8 mb-6 flex flex-col items-center">
+            <div class="px-6 py-2.5 rounded-full border border-gold-500/40 bg-maroon-900/70 backdrop-blur-md shadow-lg flex items-center gap-3">
+                <i class="far fa-calendar-alt text-gold-400"></i>
+                <span class="font-cinzel tracking-widest text-xs sm:text-sm text-gold-300 font-semibold">Saturday, 5th December 2026</span>
+                <span class="text-gold-500">•</span>
+                <span class="font-sans text-xs tracking-wider text-stone-300 uppercase">Zirakpur &amp; Chandigarh</span>
+            </div>
+        </div>
+
+        <!-- LIVE COUNTDOWN TIMER (Dec 5, 2026, 7:00 PM IST) -->
+        <div class="z-20 max-w-xl w-full mx-auto my-4 bg-maroon-950/75 p-6 rounded-3xl border border-gold-500/30 backdrop-blur-md">
+            <p class="text-xs uppercase tracking-widest text-gold-400 mb-4 font-semibold">Counting Down To The Auspicious Moment</p>
+            <div class="grid grid-cols-4 gap-2 sm:gap-4 text-center">
+                <div class="bg-maroon-900/80 p-3 sm:p-4 rounded-2xl border border-gold-500/20">
+                    <span id="days" class="block font-cinzel text-2xl sm:text-4xl text-gold-300 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-wider text-stone-300">Days</span>
+                </div>
+                <div class="bg-maroon-900/80 p-3 sm:p-4 rounded-2xl border border-gold-500/20">
+                    <span id="hours" class="block font-cinzel text-2xl sm:text-4xl text-gold-300 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-wider text-stone-300">Hours</span>
+                </div>
+                <div class="bg-maroon-900/80 p-3 sm:p-4 rounded-2xl border border-gold-500/20">
+                    <span id="minutes" class="block font-cinzel text-2xl sm:text-4xl text-gold-300 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-wider text-stone-300">Mins</span>
+                </div>
+                <div class="bg-maroon-900/80 p-3 sm:p-4 rounded-2xl border border-gold-500/20">
+                    <span id="seconds" class="block font-cinzel text-2xl sm:text-4xl text-gold-300 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-wider text-stone-300">Secs</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick CTA Buttons -->
+        <div class="z-20 mt-6 flex flex-wrap gap-4 justify-center">
+            <a href="#itinerary" class="px-8 py-3.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-maroon-950 font-bold text-xs uppercase tracking-widest rounded-full shadow-xl transition transform hover:-translate-y-0.5">
+                View Itinerary
+            </a>
+            <button onclick="addToGoogleCalendar()" class="px-6 py-3.5 bg-transparent hover:bg-gold-500/10 text-gold-300 border border-gold-400/60 font-semibold text-xs uppercase tracking-widest rounded-full shadow-lg transition flex items-center gap-2">
+                <i class="fab fa-google"></i> Add to Calendar
+            </button>
+        </div>
+
+        <div class="z-20 mt-10">
+            <a href="#family-details" class="text-gold-400/80 text-xl animate-bounce inline-block">
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- FAMILY BLESSINGS & COUPLE INTRODUCTION -->
+    <section id="family-details" class="py-20 px-4 bg-royal-cream relative overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-xs uppercase font-sans tracking-[0.3em] text-maroon-800 font-semibold">With Heavenly Blessings</span>
+            <h2 class="font-cinzel text-3xl sm:text-4xl text-maroon-950 mt-1 mb-3 font-bold">The Families</h2>
+            <div class="w-24 h-1 bg-gold-500 mx-auto rounded-full mb-8"></div>
+            
+            <p class="font-serif text-xl sm:text-2xl text-stone-700 leading-relaxed max-w-2xl mx-auto italic mb-12">
+                "Together with their parents and elders, Ashish &amp; Sushmita warmly invite you to share in the joy of their union."
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Groom Card -->
+                <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-stone-200/90 relative group hover:border-gold-500 transition duration-300">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-gold-500 to-maroon-900 p-1 mb-5">
+                        <div class="w-full h-full rounded-full bg-stone-50 flex items-center justify-center">
+                            <i class="fas fa-crown text-2xl text-maroon-900"></i>
+                        </div>
+                    </div>
+                    <h3 class="font-cinzel text-2xl sm:text-3xl text-maroon-950 font-bold">Ashish</h3>
+                    <p class="text-xs uppercase tracking-widest text-gold-600 font-semibold mb-4">Groom</p>
+                    <div class="border-t border-stone-200 pt-4">
+                        <p class="text-xs uppercase tracking-wider text-stone-500 font-medium">Son of</p>
+                        <p class="text-maroon-900 font-serif text-xl sm:text-2xl font-bold mt-1">
+                            Mrs. Suman Tandon<br>&amp; Mr. Rajeev Tandon
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bride Card -->
+                <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-stone-200/90 relative group hover:border-gold-500 transition duration-300">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-gold-500 to-maroon-900 p-1 mb-5">
+                        <div class="w-full h-full rounded-full bg-stone-50 flex items-center justify-center">
+                            <i class="fas fa-heart text-2xl text-maroon-900"></i>
+                        </div>
+                    </div>
+                    <h3 class="font-cinzel text-2xl sm:text-3xl text-maroon-950 font-bold">Sushmita</h3>
+                    <p class="text-xs uppercase tracking-widest text-gold-600 font-semibold mb-4">Bride</p>
+                    <div class="border-t border-stone-200 pt-4">
+                        <p class="text-xs uppercase tracking-wider text-stone-500 font-medium">Daughter of</p>
+                        <p class="text-maroon-900 font-serif text-xl sm:text-2xl font-bold mt-1">
+                            Mrs. Suman Dhar<br>&amp; Mr. Niladri Dhar
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WEDDING ITINERARY TIMELINE -->
+    <section id="itinerary" class="py-20 px-4 bg-maroon-950 text-white relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-xs uppercase font-sans tracking-[0.3em] text-gold-400 font-semibold">Celebrations Schedule</span>
+                <h2 class="font-cinzel text-3xl sm:text-5xl text-gold-300 mt-2 font-bold">Wedding Itinerary</h2>
+                <div class="w-24 h-1 bg-gold-500 mx-auto rounded-full mt-4"></div>
+                <p class="text-stone-300 text-sm mt-3 font-serif italic">Every moment made special with your gracious presence.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Event 1: Engagement & Ladies Sangeet -->
+                <div class="bg-maroon-900/90 border border-gold-500/30 p-8 rounded-3xl shadow-xl hover:border-gold-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gold-500/20 text-gold-300 border border-gold-500/40">
+                                Friday Evening
+                            </span>
+                            <i class="fas fa-music text-2xl text-gold-400"></i>
+                        </div>
+                        <h3 class="font-cinzel text-2xl font-bold text-gold-300">Engagement &amp; Ladies Sangeet Night</h3>
+                        <p class="text-xs tracking-wider text-stone-300 mt-2 mb-3 flex items-center gap-2">
+                            <i class="far fa-clock text-gold-400"></i> Dec 4th, 2026 • 7:30 PM Onwards
+                        </p>
+                        <p class="text-stone-300 text-sm mb-4 leading-relaxed">
+                            <i class="fas fa-map-marker-alt text-gold-400 mr-1.5"></i> <strong>Place:</strong> Hotel GK International, Sector 35, Chandigarh
+                        </p>
+                    </div>
+                    <div class="border-t border-gold-500/20 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <span class="text-xs text-gold-300 font-medium"><i class="fas fa-tshirt mr-1.5 text-gold-400"></i> Dress Code: Western Evening</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Hotel+GK+International+Sector+35+Chandigarh" target="_blank" class="text-xs text-gold-400 hover:text-white underline font-semibold flex items-center gap-1">
+                            <i class="fas fa-directions"></i> Google Map &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Event 2: Haldi & Mehendi -->
+                <div class="bg-maroon-900/90 border border-gold-500/30 p-8 rounded-3xl shadow-xl hover:border-gold-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gold-500/20 text-gold-300 border border-gold-500/40">
+                                Saturday Morning
+                            </span>
+                            <i class="fas fa-spa text-2xl text-gold-400"></i>
+                        </div>
+                        <h3 class="font-cinzel text-2xl font-bold text-gold-300">Haldi &amp; Mehendi Ceremony</h3>
+                        <p class="text-xs tracking-wider text-stone-300 mt-2 mb-3 flex items-center gap-2">
+                            <i class="far fa-clock text-gold-400"></i> Dec 5th, 2026 • 10:30 AM Onwards
+                        </p>
+                        <p class="text-stone-300 text-sm mb-4 leading-relaxed">
+                            <i class="fas fa-map-marker-alt text-gold-400 mr-1.5"></i> <strong>Place:</strong> 1st Floor, Hotel Kaveri, Zirakpur
+                        </p>
+                    </div>
+                    <div class="border-t border-gold-500/20 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <span class="text-xs text-gold-300 font-medium"><i class="fas fa-tshirt mr-1.5 text-gold-400"></i> Dress Code: Shades of Yellow &amp; Orange</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Kaveri+Zirakpur" target="_blank" class="text-xs text-gold-400 hover:text-white underline font-semibold flex items-center gap-1">
+                            <i class="fas fa-directions"></i> Google Map &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Event 3: Sehra Bandi -->
+                <div class="bg-maroon-900/90 border border-gold-500/30 p-8 rounded-3xl shadow-xl hover:border-gold-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gold-500/20 text-gold-300 border border-gold-500/40">
+                                Saturday Evening
+                            </span>
+                            <i class="fas fa-feather-alt text-2xl text-gold-400"></i>
+                        </div>
+                        <h3 class="font-cinzel text-2xl font-bold text-gold-300">Sehra Bandi Ceremony</h3>
+                        <p class="text-xs tracking-wider text-stone-300 mt-2 mb-3 flex items-center gap-2">
+                            <i class="far fa-clock text-gold-400"></i> Dec 5th, 2026 • 6:00 PM
+                        </p>
+                        <p class="text-stone-300 text-sm mb-4 leading-relaxed">
+                            <i class="fas fa-map-marker-alt text-gold-400 mr-1.5"></i> <strong>Place:</strong> 1st Floor, Hotel Kaveri, Zirakpur
+                        </p>
+                    </div>
+                    <div class="border-t border-gold-500/20 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <span class="text-xs text-gold-300 font-medium"><i class="fas fa-users mr-1.5 text-gold-400"></i> Family &amp; Traditional Rituals</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Kaveri+Zirakpur" target="_blank" class="text-xs text-gold-400 hover:text-white underline font-semibold flex items-center gap-1">
+                            <i class="fas fa-directions"></i> Google Map &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Event 4: Barat Departure & Wedding -->
+                <div class="bg-maroon-900/90 border-2 border-gold-400 p-8 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-between gold-shadow">
+                    <div class="absolute -right-10 -top-10 w-28 h-28 bg-gold-500/10 rounded-full blur-xl pointer-events-none"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gold-500 text-maroon-950 font-bold uppercase tracking-wider">
+                                Grand Auspicious Wedding
+                            </span>
+                            <i class="fas fa-ring text-2xl text-gold-400"></i>
+                        </div>
+                        <h3 class="font-cinzel text-2xl font-bold text-gold-300">Barat Departure &amp; Wedding Ceremony</h3>
+                        <p class="text-xs tracking-wider text-stone-300 mt-2 mb-4 flex items-center gap-2">
+                            <i class="far fa-clock text-gold-400"></i> Dec 5th, 2026 • 7:00 PM Onwards
+                        </p>
+                        
+                        <div class="space-y-2 mb-5 text-xs text-stone-200">
+                            <p class="flex items-start gap-2">
+                                <i class="fas fa-car text-gold-400 mt-0.5"></i>
+                                <span><strong>Barat Departure:</strong> Raj Vehicle Mahindra</span>
+                            </p>
+                            <p class="flex items-start gap-2">
+                                <i class="fas fa-landmark text-gold-400 mt-0.5"></i>
+                                <span><strong>Wedding Ceremony:</strong> Platinum Resorts, Zirakpur</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gold-500/30 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <span class="text-xs text-gold-300 font-medium"><i class="fas fa-tshirt mr-1.5 text-gold-400"></i> Dress Code: Royal Indian Formal</span>
+                        <a href="https://www.google.com/maps/place//data=!4m2!3m1!19sChIJPZMUVRfrDzkRSzpCktvYnNg" target="_blank" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 text-maroon-950 font-bold text-xs uppercase tracking-wider rounded-xl hover:from-gold-400 hover:to-gold-500 transition shadow flex items-center justify-center gap-2">
+                            <i class="fas fa-map-marked-alt"></i> Platinum Resorts Map
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROMINENT PLATINUM RESORTS VENUE LOCATION SECTION -->
+    <section class="py-20 px-4 bg-royal-cream">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-xs uppercase font-sans tracking-[0.3em] text-maroon-800 font-semibold">Wedding Venue</span>
+                <h2 class="font-cinzel text-3xl sm:text-4xl text-maroon-950 mt-1 font-bold">Platinum Resorts, Zirakpur</h2>
+                <div class="w-20 h-1 bg-gold-500 mx-auto rounded-full mt-3"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-200">
+                <div class="p-8 sm:p-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-stone-200 pb-8">
+                        <div>
+                            <span class="text-xs font-semibold text-gold-600 uppercase tracking-widest">Main Wedding Location</span>
+                            <h3 class="font-cinzel text-2xl sm:text-3xl font-bold text-maroon-950 mt-1">Platinum Resorts</h3>
+                            <p class="text-stone-600 text-sm mt-1.5 flex items-center gap-2">
+                                <i class="fas fa-map-marker-alt text-maroon-800"></i> Patiala Rd, adj. Radisson Hotel, Nabha, Zirakpur, Punjab 140603
+                            </p>
+                        </div>
+                        <a href="https://www.google.com/maps/place//data=!4m2!3m1!19sChIJPZMUVRfrDzkRSzpCktvYnNg" target="_blank" class="px-6 py-3.5 bg-maroon-900 hover:bg-maroon-800 text-gold-300 font-semibold text-xs tracking-wider uppercase rounded-xl transition shadow flex items-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-directions text-gold-400"></i> Open in Google Maps
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 text-center sm:text-left">
+                        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                            <i class="fas fa-car text-2xl text-gold-600 mb-2"></i>
+                            <h4 class="font-semibold text-stone-900 text-sm">Barat Departure</h4>
+                            <p class="text-xs text-stone-600 mt-1">Raj Vehicle Mahindra departure at 7:00 PM.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                            <i class="fas fa-hotel text-2xl text-gold-600 mb-2"></i>
+                            <h4 class="font-semibold text-stone-900 text-sm">Landmark</h4>
+                            <p class="text-xs text-stone-600 mt-1">Adjacent to Radisson Hotel on Patiala Highway.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                            <i class="fas fa-parking text-2xl text-gold-600 mb-2"></i>
+                            <h4 class="font-semibold text-stone-900 text-sm">Parking &amp; Valet</h4>
+                            <p class="text-xs text-stone-600 mt-1">Ample on-site parking arranged for our guests.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER & SHARING -->
+    <footer class="bg-maroon-950 border-t border-gold-500/30 py-12 px-4 text-center text-stone-400">
+        <div class="max-w-xl mx-auto">
+            <h3 class="font-cinzel text-2xl sm:text-3xl text-gold-400 font-bold tracking-widest mb-1">ASHISH &amp; SUSHMITA</h3>
+            <p class="font-script text-2xl sm:text-3xl text-gold-300 mb-6">#AshishWedsSushmita</p>
+            
+            <p class="font-serif italic text-base sm:text-lg text-stone-300 mb-8 max-w-md mx-auto leading-relaxed">
+                "We eagerly await your presence to grace this auspicious celebration of love, laughter, and lifelong togetherness."
+            </p>
+
+            <!-- WhatsApp & Share Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button onclick="shareInviteWhatsApp()" class="px-6 py-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-full text-xs font-semibold flex items-center gap-2 transition shadow">
+                    <i class="fab fa-whatsapp text-base"></i> Share Invitation on WhatsApp
+                </button>
+                <button onclick="copyInviteLink()" class="px-6 py-3 bg-maroon-900 hover:bg-maroon-800 text-gold-300 border border-gold-500/40 rounded-full text-xs font-semibold flex items-center gap-2 transition shadow">
+                    <i class="fas fa-link text-sm"></i> Copy Link
+                </button>
+            </div>
+
+            <p class="text-xs text-stone-400 tracking-wider">With Warm Regards &amp; Compliments:<br><span class="text-gold-300 font-medium">Tandon &amp; Dhar Families</span></p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* 1. COUNTDOWN TIMER TO DEC 5, 2026 19:00 IST */
+        const weddingDate = new Date("December 5, 2026 19:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = weddingDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerText = days.toString().padStart(2, '0');
+                document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+                document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+                document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+            } else {
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        /* 2. PETALS & GLITTER CANVAS */
+        const canvas = document.getElementById('petal-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = [];
+        const totalParticles = 40;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -100;
+                this.size = Math.random() * 8 + 4;
+                this.speedY = Math.random() * 1.2 + 0.6;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 2;
+                this.isPetal = Math.random() > 0.35;
+                this.color = this.isPetal ? 'rgba(230, 57, 70, ' + (Math.random() * 0.4 + 0.4) + ')' : 'rgba(246, 211, 101, ' + (Math.random() * 0.6 + 0.3) + ')';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) * 0.5 + this.speedX * 0.2;
+                this.rotation += this.rotationSpeed;
+                if (this.y > height + 20) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                if (this.isPetal) {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(this.size, -this.size, 0, -this.size * 2);
+                    ctx.quadraticCurveTo(-this.size, -this.size, 0, 0);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < totalParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* 3. NATIVE WEB AUDIO API SYNTHESIZER (SHEHNAI / RAGA AMBIENCE) */
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let melodyInterval = null;
+        let droneOsc1 = null;
+        let droneOsc2 = null;
+        let masterGain = null;
+
+        const ragaNotes = [261.63, 293.66, 329.63, 369.99, 392.00, 440.00, 493.88, 523.25];
+
+        function initIndianSynthesizer() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+
+            masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            masterGain.connect(audioCtx.destination);
+
+            droneOsc1 = audioCtx.createOscillator();
+            droneOsc2 = audioCtx.createOscillator();
+
+            const droneGain = audioCtx.createGain();
+            droneGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+
+            droneOsc1.type = 'triangle';
+            droneOsc1.frequency.setValueAtTime(130.81, audioCtx.currentTime);
+
+            droneOsc2.type = 'sine';
+            droneOsc2.frequency.setValueAtTime(196.00, audioCtx.currentTime);
+
+            droneOsc1.connect(droneGain);
+            droneOsc2.connect(droneGain);
+            droneGain.connect(masterGain);
+
+            droneOsc1.start();
+            droneOsc2.start();
+
+            let step = 0;
+            const sequence = [0, 1, 2, 4, 3, 2, 4, 6, 7, 6, 4, 2, 1, 0];
+
+            melodyInterval = setInterval(() => {
+                if (!isMusicPlaying || !audioCtx) return;
+                playFluteNote(ragaNotes[sequence[step % sequence.length]]);
+                step++;
+            }, 1200);
+        }
+
+        function playFluteNote(freq) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const noteGain = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1400, audioCtx.currentTime);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 0.98, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(freq, audioCtx.currentTime + 0.15);
+
+                const now = audioCtx.currentTime;
+                noteGain.gain.setValueAtTime(0.001, now);
+                noteGain.gain.linearRampToValueAtTime(0.12, now + 0.25);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+
+                osc.connect(filter);
+                filter.connect(noteGain);
+                noteGain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + 1.15);
+            } catch (e) {
+                console.error("Audio error", e);
+            }
+        }
+
+        const musicBtn = document.getElementById('music-toggle-btn');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+
+        musicBtn.addEventListener('click', () => {
+            if (!isMusicPlaying) {
+                if (!audioCtx) {
+                    initIndianSynthesizer();
+                } else if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                isMusicPlaying = true;
+                musicIcon.className = "fas fa-volume-up text-base sm:text-lg text-gold-300 animate-pulse";
+                musicText.innerText = "Playing Shehnai";
+                showToast("Playing traditional Shehnai & Sitar melody");
+            } else {
+                if (audioCtx) {
+                    audioCtx.suspend();
+                }
+                isMusicPlaying = false;
+                musicIcon.className = "fas fa-music text-base sm:text-lg";
+                musicText.innerText = "Play Shehnai";
+                showToast("Music paused");
+            }
+        });
+
+        /* 4. GOOGLE CALENDAR BUTTON */
+        function addToGoogleCalendar() {
+            const title = encodeURIComponent("Ashish & Sushmita's Wedding Ceremony");
+            const details = encodeURIComponent("Wedding ceremony of Ashish (Son of Mr. Rajeev Tandon & Mrs. Suman Tandon) & Sushmita (Daughter of Mr. Niladri Dhar & Mrs. Suman Dhar) at Platinum Resorts, Zirakpur.");
+            const location = encodeURIComponent("Platinum Resorts, Patiala Rd, adj. Radisson Hotel, Nabha, Zirakpur, Punjab 140603");
+            const dates = "20261205T133000Z/20261205T193000Z";
+            const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+            window.open(gCalUrl, '_blank');
+        }
+
+        /* 5. WHATSAPP & CLIPBOARD SHARING */
+        function shareInviteWhatsApp() {
+            const message = encodeURIComponent("You are cordially invited to celebrate the wedding celebrations of Ashish & Sushmita! 🌸✨\n\nDate: December 5th, 2026\nVenue: Platinum Resorts, Zirakpur\n\nView itinerary & details: " + window.location.href);
+            window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+        }
+
+        function copyInviteLink() {
+            const tempInput = document.createElement('input');
+            tempInput.value = window.location.href;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast("Invitation link copied to clipboard!");
+        }
+
+        /* 6. TOAST NOTIFICATION */
+        function showToast(message) {
+            const toast = document.getElementById('toast-box');
+            const msg = document.getElementById('toast-message');
+            msg.innerText = message;
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
